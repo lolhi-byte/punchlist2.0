@@ -268,11 +268,14 @@ async function printList() {
                 "box-sizing: border-box;" +
             "}" +
 
-            "body {" +
-                "font-family: Arial, sans-serif;" +
+            "html, body {" +
                 "margin: 0;" +
                 "padding: 0;" +
                 "width: 100%;" +
+            "}" +
+
+            "body {" +
+                "font-family: Arial, sans-serif;" +
                 "color: black;" +
             "}" +
 
@@ -287,26 +290,49 @@ async function printList() {
             "}" +
 
             ".print-item {" +
-                "display: grid;" +
-                "grid-template-columns: 55px repeat(4, minmax(0, 1fr));" +
+                "display: table;" +
+                "table-layout: fixed;" +
                 "width: 100%;" +
                 "height: 145px;" +
-                "gap: 4px;" +
                 "margin-bottom: 4px;" +
                 "page-break-inside: avoid;" +
                 "break-inside: avoid;" +
             "}" +
 
+            ".item-number," +
+            ".item-details," +
+            ".print-photo {" +
+                "display: table-cell;" +
+                "height: 145px;" +
+                "vertical-align: top;" +
+            "}" +
+
             ".item-number {" +
+                "width: 6%;" +
                 "border: 2px solid black;" +
                 "text-align: center;" +
                 "padding: 5px 2px;" +
             "}" +
 
             ".item-details {" +
+                "width: 23.5%;" +
                 "border: 2px solid black;" +
                 "padding: 5px;" +
                 "overflow: hidden;" +
+            "}" +
+
+            ".print-photo {" +
+                "width: 23.5%;" +
+                "height: 145px;" +
+                "overflow: hidden;" +
+                "padding-left: 4px;" +
+            "}" +
+
+            ".print-photo img {" +
+                "display: block;" +
+                "width: 100%;" +
+                "height: 145px;" +
+                "object-fit: cover;" +
             "}" +
 
             ".label {" +
@@ -323,7 +349,8 @@ async function printList() {
             ".issue {" +
                 "font-size: 14px;" +
                 "line-height: 1.15;" +
-                "min-height: 57px;" +
+                "height: 57px;" +
+                "overflow: hidden;" +
                 "overflow-wrap: anywhere;" +
             "}" +
 
@@ -331,22 +358,6 @@ async function printList() {
                 "font-size: 13px;" +
                 "line-height: 1.15;" +
                 "overflow-wrap: anywhere;" +
-            "}" +
-
-            ".print-photos {" +
-                "display: contents;" +
-            "}" +
-
-            ".print-photo {" +
-                "height: 145px;" +
-                "overflow: hidden;" +
-            "}" +
-
-            ".print-photo img {" +
-                "display: block;" +
-                "width: 100%;" +
-                "height: 100%;" +
-                "object-fit: cover;" +
             "}" +
 
         "</style>" +
@@ -385,9 +396,7 @@ async function printList() {
                         (item.comment || "") +
                     "</div>" +
 
-                "</div>" +
-
-                "<div class='print-photos'>";
+                "</div>";
 
 
         let photoCount = 0;
@@ -419,7 +428,6 @@ async function printList() {
 
 
         printContent +=
-                "</div>" +
             "</div>";
     }
 

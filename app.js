@@ -272,7 +272,8 @@ async function printList() {
             "html, body {" +
                 "margin: 0;" +
                 "padding: 0;" +
-                "width: 100%;" +
+                "width: 190mm;" +
+                "max-width: 190mm;" +
             "}" +
 
             "body {" +
@@ -288,14 +289,14 @@ async function printList() {
                 "justify-content: center;" +
                 "font-size: 22px;" +
                 "margin-bottom: 5px;" +
-                "width: 100%;" +
+                "width: 190mm;" +
             "}" +
 
             "table {" +
                 "border-collapse: separate;" +
                 "border-spacing: 0 4px;" +
                 "table-layout: fixed;" +
-                "width: 100%;" +
+                "width: 190mm;" +
             "}" +
 
             "tr {" +

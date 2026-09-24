@@ -1,15 +1,23 @@
 let database;
 let request = indexedDB.open("CleaningListDB", 2);
+
 request.onsuccess = function() {
     database = request.result;
 };
+
 request.onupgradeneeded = function() {
-database = request.result;
-database.createObjectStore("photos", { autoIncrement: true });
+    database = request.result;
+
+    if (!database.objectStoreNames.contains("photos")) {
+        database.createObjectStore("photos", { autoIncrement: true });
+    }
 };
+
 let lists = [];
 let currentList = null;
-   function newList() {
+
+
+function newList() {
     let listName = prompt("List name: ");
 
     if (!listName) return;
@@ -20,17 +28,11 @@ let currentList = null;
     });
 
     localStorage.setItem("lists", JSON.stringify(lists));
-
-    document.getElementById("listContainer").innerHTML +=
-        "<div class='list-card'>" +
-            "<button class='list-name' onclick='openList(\"" + listName + "\")'>" + listName + "</button>" +
-            "<div class='list-actions'>" +
-                "<button class='edit-list' onclick='editList(" + (lists.length - 1) + ")'>Edit</button>" +
-                "<button class='delete-list' onclick='deleteList(" + (lists.length - 1) + ")'>Delete</button>" +
-            "</div>" +
-        "</div>";
+    displayLists();
 }
-function openList(listName){
+
+
+function openList(listName) {
     currentList = lists.find(function(list) {
         return list.name === listName;
     });
@@ -48,15 +50,21 @@ function openList(listName){
 
     displayItems();
 }
+
+
 function goBack() {
     document.getElementById("homeScreen").style.display = "block";
     document.getElementById("openListContainer").innerHTML = "";
 }
+
+
 function addItem() {
     let issue = prompt("Issue: ");
+
     if (!issue) {
         return;
     }
+
     let comment = prompt("Comment (optional): ");
 
     currentList.items.push({
@@ -64,9 +72,12 @@ function addItem() {
         comment: comment,
         photos: []
     });
+
     localStorage.setItem("lists", JSON.stringify(lists));
     displayItems();
 }
+
+
 function displayItems() {
     document.getElementById("listHeader").style.display = "block";
     document.getElementById("itemContainer").innerHTML = "";
@@ -89,9 +100,13 @@ function displayItems() {
         }
     });
 }
+
+
 function openItem(index) {
     let item = currentList.items[index];
+
     document.getElementById("listHeader").style.display = "none";
+
     document.getElementById("itemContainer").innerHTML =
         "<button class='item-back' onclick='displayItems()'>← Back to list</button>" +
         "<div class='expanded-item' id='item-" + index + "'>" +
@@ -101,6 +116,7 @@ function openItem(index) {
 
     if (item.photos) {
         item.photos.forEach(function(photoId, photoIndex) {
+
             document.getElementById("photo-row-" + index).innerHTML +=
                 "<div class='expanded-photo'>" +
                     "<div id='photo-" + photoId + "'></div>" +
@@ -128,17 +144,29 @@ function openItem(index) {
             "<button class='item-delete' onclick='deleteItem(" + index + ")'>Delete item</button>" +
         "</div>";
 }
-function displayPhoto(photoId){
+
+
+function displayPhoto(photoId) {
     let transaction = database.transaction(["photos"], "readonly");
     let photoStore = transaction.objectStore("photos");
     let getPhoto = photoStore.get(photoId);
+
     getPhoto.onsuccess = function() {
         let photo = getPhoto.result;
+
+        if (!photo) return;
+
         let photoUrl = URL.createObjectURL(photo);
-        document.getElementById("photo-" + photoId).innerHTML =
-        "<img src='" + photoUrl + "' width='150'>";
+        let photoContainer = document.getElementById("photo-" + photoId);
+
+        if (photoContainer) {
+            photoContainer.innerHTML =
+                "<img src='" + photoUrl + "' width='150'>";
+        }
     };
 }
+
+
 function displayThumbnail(photoId, index) {
     let transaction = database.transaction(["photos"], "readonly");
     let photoStore = transaction.objectStore("photos");
@@ -150,11 +178,16 @@ function displayThumbnail(photoId, index) {
         if (!photo) return;
 
         let photoUrl = URL.createObjectURL(photo);
+        let thumbnail = document.getElementById("thumbnail-" + index);
 
-        document.getElementById("thumbnail-" + index).innerHTML =
-            "<img src='" + photoUrl + "'>";
+        if (thumbnail) {
+            thumbnail.innerHTML =
+                "<img src='" + photoUrl + "'>";
+        }
     };
 }
+
+
 function deletePhoto(itemIndex, photoIndex) {
     let confirmDelete = confirm("Delete this photo?");
 
@@ -167,35 +200,276 @@ function deletePhoto(itemIndex, photoIndex) {
     localStorage.setItem("lists", JSON.stringify(lists));
     openItem(itemIndex);
 }
+
+
 function addPhoto(index) {
     if (!currentList.items[index].photos) {
-    currentList.items[index].photos = [];
-}
+        currentList.items[index].photos = [];
+    }
+
     if (currentList.items[index].photos.length >= 3) {
         alert("Max 3 photos");
         return;
     }
+
     let photoInput = document.createElement("input");
 
     photoInput.type = "file";
     photoInput.accept = "image/*";
+
     photoInput.onchange = function() {
         let photo = photoInput.files[0];
+
+        if (!photo) return;
+
         let transaction = database.transaction(["photos"], "readwrite");
         let photoStore = transaction.objectStore("photos");
         let savePhoto = photoStore.add(photo);
+
         savePhoto.onsuccess = function() {
             let photoId = savePhoto.result;
+
             currentList.items[index].photos.push(photoId);
+
             localStorage.setItem("lists", JSON.stringify(lists));
             openItem(index);
         };
     };
+
     photoInput.click();
 }
-function printList() {
-    window.print();
+
+
+/* =========================
+   PUNCHLIST STYLE PDF
+   ========================= */
+
+async function printList() {
+    let printWindow = window.open("", "_blank");
+
+    if (!printWindow) {
+        alert("Please allow pop-ups to print this list.");
+        return;
+    }
+
+    let printContent =
+        "<html>" +
+        "<head>" +
+        "<title>" + currentList.name + "</title>" +
+
+        "<style>" +
+
+            "@page {" +
+                "size: A4 portrait;" +
+                "margin: 10mm;" +
+            "}" +
+
+            "* {" +
+                "box-sizing: border-box;" +
+            "}" +
+
+            "body {" +
+                "font-family: Arial, sans-serif;" +
+                "margin: 0;" +
+                "padding: 0;" +
+                "width: 100%;" +
+                "color: black;" +
+            "}" +
+
+            ".print-title {" +
+                "border: 2px solid black;" +
+                "height: 55px;" +
+                "display: flex;" +
+                "align-items: center;" +
+                "justify-content: center;" +
+                "font-size: 22px;" +
+                "margin-bottom: 5px;" +
+            "}" +
+
+            ".print-item {" +
+                "display: grid;" +
+                "grid-template-columns: 55px repeat(4, minmax(0, 1fr));" +
+                "width: 100%;" +
+                "height: 145px;" +
+                "gap: 4px;" +
+                "margin-bottom: 4px;" +
+                "page-break-inside: avoid;" +
+                "break-inside: avoid;" +
+            "}" +
+
+            ".item-number {" +
+                "border: 2px solid black;" +
+                "text-align: center;" +
+                "padding: 5px 2px;" +
+            "}" +
+
+            ".item-details {" +
+                "border: 2px solid black;" +
+                "padding: 5px;" +
+                "overflow: hidden;" +
+            "}" +
+
+            ".label {" +
+                "font-size: 11px;" +
+                "line-height: 1.1;" +
+                "color: #444;" +
+            "}" +
+
+            ".item-number-value {" +
+                "font-size: 14px;" +
+                "margin-top: 2px;" +
+            "}" +
+
+            ".issue {" +
+                "font-size: 14px;" +
+                "line-height: 1.15;" +
+                "min-height: 57px;" +
+                "overflow-wrap: anywhere;" +
+            "}" +
+
+            ".comment {" +
+                "font-size: 13px;" +
+                "line-height: 1.15;" +
+                "overflow-wrap: anywhere;" +
+            "}" +
+
+            ".print-photos {" +
+                "display: contents;" +
+            "}" +
+
+            ".print-photo {" +
+                "height: 145px;" +
+                "overflow: hidden;" +
+            "}" +
+
+            ".print-photo img {" +
+                "display: block;" +
+                "width: 100%;" +
+                "height: 100%;" +
+                "object-fit: cover;" +
+            "}" +
+
+        "</style>" +
+        "</head>" +
+
+        "<body>" +
+
+            "<div class='print-title'>" +
+                currentList.name +
+            "</div>";
+
+
+    for (let index = 0; index < currentList.items.length; index++) {
+
+        let item = currentList.items[index];
+
+        printContent +=
+            "<div class='print-item'>" +
+
+                "<div class='item-number'>" +
+                    "<div class='label'>ITEM</div>" +
+                    "<div class='item-number-value'>" +
+                        (index + 1) +
+                    "</div>" +
+                "</div>" +
+
+                "<div class='item-details'>" +
+
+                    "<div class='label'>ISSUE</div>" +
+                    "<div class='issue'>" +
+                        (item.issue || "") +
+                    "</div>" +
+
+                    "<div class='label'>COMMENT</div>" +
+                    "<div class='comment'>" +
+                        (item.comment || "") +
+                    "</div>" +
+
+                "</div>" +
+
+                "<div class='print-photos'>";
+
+
+        let photoCount = 0;
+
+        if (item.photos) {
+
+            for (let photoId of item.photos) {
+
+                let photoUrl = await getPhotoForPrint(photoId);
+
+                if (photoUrl) {
+                    printContent +=
+                        "<div class='print-photo'>" +
+                            "<img src='" + photoUrl + "'>" +
+                        "</div>";
+
+                    photoCount++;
+                }
+            }
+        }
+
+
+        /* Always create THREE photo columns */
+
+        for (let emptySlot = photoCount; emptySlot < 3; emptySlot++) {
+            printContent +=
+                "<div class='print-photo'></div>";
+        }
+
+
+        printContent +=
+                "</div>" +
+            "</div>";
+    }
+
+
+    printContent +=
+        "</body>" +
+        "</html>";
+
+
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
 }
+
+
+function getPhotoForPrint(photoId) {
+    return new Promise(function(resolve) {
+
+        let transaction = database.transaction(["photos"], "readonly");
+        let photoStore = transaction.objectStore("photos");
+        let getPhoto = photoStore.get(photoId);
+
+        getPhoto.onsuccess = function() {
+            let photo = getPhoto.result;
+
+            if (!photo) {
+                resolve(null);
+                return;
+            }
+
+            let reader = new FileReader();
+
+            reader.onload = function() {
+                resolve(reader.result);
+            };
+
+            reader.readAsDataURL(photo);
+        };
+
+        getPhoto.onerror = function() {
+            resolve(null);
+        };
+    });
+}
+
+
+/* =========================
+   DELETE / EDIT
+   ========================= */
+
 function deleteList(index) {
     let confirmDelete = confirm("Delete this list?");
 
@@ -206,13 +480,10 @@ function deleteList(index) {
     lists.splice(index, 1);
 
     localStorage.setItem("lists", JSON.stringify(lists));
-
-    document.getElementById("listContainer").innerHTML = "";
-
-    lists.forEach(function(list, index) {
-        displayLists();
-    });
+    displayLists();
 }
+
+
 function deleteItem(index) {
     let confirmDelete = confirm("Delete this item?");
 
@@ -225,6 +496,8 @@ function deleteItem(index) {
     localStorage.setItem("lists", JSON.stringify(lists));
     displayItems();
 }
+
+
 function editItem(index) {
     let currentIssue = currentList.items[index].issue;
     let currentComment = currentList.items[index].comment;
@@ -243,6 +516,8 @@ function editItem(index) {
     localStorage.setItem("lists", JSON.stringify(lists));
     openItem(index);
 }
+
+
 function editList(index) {
     let currentName = lists[index].name;
 
@@ -255,33 +530,38 @@ function editList(index) {
     lists[index].name = newName;
 
     localStorage.setItem("lists", JSON.stringify(lists));
-
-    document.getElementById("listContainer").innerHTML = "";
-
-    lists.forEach(function(list, index) {
-        displayLists();
-    });
+    displayLists();
 }
+
+
 function displayLists() {
     document.getElementById("listContainer").innerHTML = "";
 
     lists.forEach(function(list, index) {
-    document.getElementById("listContainer").innerHTML +=
-        "<div class='list-card'>" +
-            "<button class='list-name' onclick='openList(\"" + list.name + "\")'>" + list.name + "</button>" +
-            "<div class='list-actions'>" +
-                "<button class='edit-list' onclick='editList(" + index + ")'>Edit</button>" +
-                "<button class='delete-list' onclick='deleteList(" + index + ")'>Delete</button>" +
-            "</div>" +
-        "</div>";
+
+        document.getElementById("listContainer").innerHTML +=
+            "<div class='list-card'>" +
+                "<button class='list-name' onclick='openList(\"" + list.name + "\")'>" +
+                    list.name +
+                "</button>" +
+
+                "<div class='list-actions'>" +
+                    "<button class='edit-list' onclick='editList(" + index + ")'>Edit</button>" +
+                    "<button class='delete-list' onclick='deleteList(" + index + ")'>Delete</button>" +
+                "</div>" +
+            "</div>";
     });
 }
+
+
+/* =========================
+   LOAD SAVED LISTS
+   ========================= */
+
 let savedLists = localStorage.getItem("lists");
 
 if (savedLists) {
-lists = JSON.parse(savedLists);
-
-lists.forEach(function(list, index) {
-    displayLists();
-});
+    lists = JSON.parse(savedLists);
 }
+
+displayLists();

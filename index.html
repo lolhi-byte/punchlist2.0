@@ -1,40 +1,340 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Punchlist 2.0 </title>
+        <link href="https://fonts.googleapis.com/css?family=Didact+Gothic" rel="stylesheet">
+
+        <title>Punchlist 2.0</title>
+
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-       <style>
-            button {
-    font-size: 16px;
-    padding: 8px 12px;
-    margin: 4px;
-}
-            body {
-                font-family: Arial, sans-serif;
+        <style>
+            :root {
+                --pink: #F77FBE;
+                --light-pink: #FCE4F1;
             }
 
+            body {
+                font-family: "Didact Gothic", sans-serif;
+                background-color: #f7f7f7;
+                margin: 0;
+                color: #222;
+            }
+
+            button {
+                font-family: inherit;
+                font-size: 16px;
+                padding: 10px 14px;
+                margin: 4px;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+            }
+
+            /* HOME SCREEN */
+
+            #homeScreen {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 24px 18px;
+            }
+
+            #homeScreen h1 {
+                margin: 8px 0 24px 0;
+                font-size: 32px;
+            }
+
+            #homeScreen > button {
+                background-color: var(--pink);
+                color: white;
+                font-size: 18px;
+                padding: 12px 18px;
+                margin: 0 0 20px 0;
+            }
+
+            /* SAVED LIST CARDS */
+
+            .list-card {
+                background: white;
+                border-radius: 14px;
+                padding: 12px;
+                margin: 12px 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+
+            .list-name {
+                display: block;
+                width: 100%;
+                text-align: left;
+                background: var(--light-pink);
+                color: #222;
+                font-size: 19px;
+                margin: 0 0 8px 0;
+            }
+
+            .list-actions {
+                display: flex;
+                justify-content: flex-end;
+            }
+
+            .edit-list {
+                background: #eeeeee;
+                color: #333;
+            }
+
+            .delete-list {
+                background: transparent;
+                color: #c94b63;
+            }
+
+            /* OPEN LIST SCREEN */
+
+            #openListContainer {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 24px 18px;
+            }
+
+            #openListContainer h2 {
+                font-size: 28px;
+                margin: 16px 4px;
+            }
+
+            #openListContainer > button:first-child {
+                background: transparent;
+                color: var(--pink);
+                padding-left: 4px;
+                font-size: 17px;
+            }
+
+            #openListContainer > button:nth-of-type(2) {
+                background: var(--pink);
+                color: white;
+            }
+
+            #openListContainer > button:nth-of-type(3) {
+                background: white;
+                color: #333;
+                border: 1px solid #ddd;
+            }
+
+            /* COMPACT JOB LIST */
+
+            .job-row {
+                display: flex;
+                align-items: stretch;
+                background: white;
+                min-height: 90px;
+                margin-bottom: 2px;
+                overflow: hidden;
+                cursor: pointer;
+            }
+
+            .job-thumbnail {
+                width: 90px;
+                min-width: 90px;
+                background: var(--light-pink);
+            }
+
+            .job-thumbnail img {
+                width: 100%;
+                height: 100%;
+                min-height: 90px;
+                object-fit: cover;
+                display: block;
+            }
+
+            .job-info {
+                padding: 14px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                min-width: 0;
+            }
+
+            .job-issue {
+                font-size: 19px;
+                font-weight: bold;
+            }
+
+            .job-comment {
+                font-size: 15px;
+                color: #666;
+                margin-top: 4px;
+            }
+
+            /* EXPANDED JOB */
+
+            .item-back {
+                background: transparent;
+                color: var(--pink);
+                padding-left: 4px;
+                margin: 12px 0 4px 0;
+            }
+
+            .expanded-item {
+                background: white;
+                border-radius: 16px;
+                padding: 18px;
+                margin-top: 10px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+
+            .expanded-item h3 {
+                font-size: 25px;
+                margin: 0 0 14px 0;
+            }
+
+            .expanded-comment {
+                font-size: 16px;
+                color: #555;
+                margin: 4px 0 18px 0;
+            }
+
+            .expanded-comment-label {
+                font-size: 10px;
+                font-weight: bold;
+                letter-spacing: 1px;
+                color: #999;
+                margin: 0;
+            }
+
+            /* EXPANDED PHOTOS */
+
+            .expanded-photos {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                margin: 14px 0 18px 0;
+            }
+
+            .expanded-photo {
+                min-width: 0;
+            }
+
+            .expanded-photo img {
+                width: 100%;
+                aspect-ratio: 1 / 1;
+                object-fit: cover;
+                border-radius: 12px;
+                display: block;
+            }
+
+            .add-photo-tile {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 1 / 1;
+                align-self: start;
+                margin: 0;
+                padding: 0;
+                background: var(--light-pink);
+                color: var(--pink);
+                border: 2px dashed var(--pink);
+                border-radius: 12px;
+                font-size: 30px;
+            }
+
+            .expanded-photo button {
+                width: 100%;
+                padding: 6px 2px;
+                margin: 3px 0 0 0;
+                background: transparent;
+                color: #c94b63;
+                font-size: 12px;
+            }
+
+            .add-photo-tile {
+                width: 100%;
+                aspect-ratio: 1 / 1;
+                margin: 0;
+                padding: 0;
+                background: var(--light-pink);
+                color: var(--pink);
+                border: 2px dashed var(--pink);
+                border-radius: 12px;
+                font-size: 30px;
+            }
+
+            /* EXPANDED ITEM ACTIONS */
+
+            .item-actions {
+                display: flex;
+                gap: 8px;
+                margin-top: 18px;
+            }
+
+            .item-edit {
+                flex: 1;
+                margin: 0;
+                background: var(--light-pink);
+                color: #222;
+            }
+
+            .item-delete {
+                margin: 0;
+                background: transparent;
+                color: #c94b63;
+            }
+
+            /* EXISTING REPORT STYLING */
+
             .report-item {
-                padding: 8px;
-                margin-bottom: 12px;
+                background: white;
+                border-radius: 14px;
+                padding: 16px;
+                margin: 14px 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             }
 
             .report-label {
                 font-size: 10px;
                 font-weight: bold;
+                letter-spacing: 1px;
+                color: #999;
                 margin: 0;
             }
 
             .report-issue {
-                font-size: 18px;
+                font-size: 20px;
                 font-weight: bold;
-                margin: 2px 0 8px 0;
+                margin: 3px 0 10px 0;
             }
 
             .report-comment {
-                margin: 2px 0 8px 0;
+                font-size: 16px;
+                color: #555;
+                margin: 3px 0 12px 0;
             }
+
+            .photo-row {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                margin: 12px 0;
+            }
+
+            .photo-wrapper {
+                flex: 1;
+                min-width: 100px;
+                max-width: 180px;
+            }
+
+            .photo-wrapper img {
+                width: 100%;
+                height: 120px;
+                object-fit: cover;
+                border-radius: 10px;
+            }
+
+            .photo-wrapper button {
+                width: 100%;
+                margin: 4px 0;
+                background: transparent;
+                color: #c94b63;
+                font-size: 13px;
+            }
+
+            /* PRINT / PDF */
 
             @media print {
                 button {
@@ -52,27 +352,28 @@
                     margin-right: 8px;
                     margin-bottom: 8px;
                 }
+
                 .report-item {
-                border: 1px solid black;
-                page-break-inside: avoid;
+                    border: 1px solid black;
+                    page-break-inside: avoid;
                 }
-        }
-        .photo-row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }   
+            }
         </style>
     </head>
 
     <body>
+
         <div id="homeScreen">
             <h1>Punchlist 2.0</h1>
+
             <button onclick="newList()">+ New List</button>
+
             <div id="listContainer"></div>
         </div>
+
         <div id="openListContainer"></div>
+
         <script src="app.js"></script>
+
     </body>
 </html>
-

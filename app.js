@@ -255,6 +255,7 @@ async function printList() {
     let printContent =
         "<html>" +
         "<head>" +
+        "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
         "<title>" + currentList.name + "</title>" +
 
         "<style>" +
@@ -287,24 +288,26 @@ async function printList() {
                 "justify-content: center;" +
                 "font-size: 22px;" +
                 "margin-bottom: 5px;" +
+                "width: 100%;" +
             "}" +
 
-            ".print-item {" +
-                "display: table;" +
+            "table {" +
+                "border-collapse: separate;" +
+                "border-spacing: 0 4px;" +
                 "table-layout: fixed;" +
                 "width: 100%;" +
+            "}" +
+
+            "tr {" +
                 "height: 145px;" +
-                "margin-bottom: 4px;" +
                 "page-break-inside: avoid;" +
                 "break-inside: avoid;" +
             "}" +
 
-            ".item-number," +
-            ".item-details," +
-            ".print-photo {" +
-                "display: table-cell;" +
+            "td {" +
                 "height: 145px;" +
                 "vertical-align: top;" +
+                "padding: 0;" +
             "}" +
 
             ".item-number {" +
@@ -318,14 +321,12 @@ async function printList() {
                 "width: 23.5%;" +
                 "border: 2px solid black;" +
                 "padding: 5px;" +
-                "overflow: hidden;" +
             "}" +
 
             ".print-photo {" +
                 "width: 23.5%;" +
-                "height: 145px;" +
-                "overflow: hidden;" +
                 "padding-left: 4px;" +
+                "overflow: hidden;" +
             "}" +
 
             ".print-photo img {" +
@@ -367,7 +368,17 @@ async function printList() {
 
             "<div class='print-title'>" +
                 currentList.name +
-            "</div>";
+            "</div>" +
+
+            "<table>" +
+                "<colgroup>" +
+                    "<col style='width: 6%;'>" +
+                    "<col style='width: 23.5%;'>" +
+                    "<col style='width: 23.5%;'>" +
+                    "<col style='width: 23.5%;'>" +
+                    "<col style='width: 23.5%;'>" +
+                "</colgroup>" +
+                "<tbody>";
 
 
     for (let index = 0; index < currentList.items.length; index++) {
@@ -375,17 +386,16 @@ async function printList() {
         let item = currentList.items[index];
 
         printContent +=
-            "<div class='print-item'>" +
+            "<tr>" +
 
-                "<div class='item-number'>" +
+                "<td class='item-number'>" +
                     "<div class='label'>ITEM</div>" +
                     "<div class='item-number-value'>" +
                         (index + 1) +
                     "</div>" +
-                "</div>" +
+                "</td>" +
 
-                "<div class='item-details'>" +
-
+                "<td class='item-details'>" +
                     "<div class='label'>ISSUE</div>" +
                     "<div class='issue'>" +
                         (item.issue || "") +
@@ -395,8 +405,7 @@ async function printList() {
                     "<div class='comment'>" +
                         (item.comment || "") +
                     "</div>" +
-
-                "</div>";
+                "</td>";
 
 
         let photoCount = 0;
@@ -409,9 +418,9 @@ async function printList() {
 
                 if (photoUrl) {
                     printContent +=
-                        "<div class='print-photo'>" +
+                        "<td class='print-photo'>" +
                             "<img src='" + photoUrl + "'>" +
-                        "</div>";
+                        "</td>";
 
                     photoCount++;
                 }
@@ -419,20 +428,22 @@ async function printList() {
         }
 
 
-        /* Always create THREE photo columns */
+        /* Always make exactly 3 photo cells */
 
         for (let emptySlot = photoCount; emptySlot < 3; emptySlot++) {
             printContent +=
-                "<div class='print-photo'></div>";
+                "<td class='print-photo'></td>";
         }
 
 
         printContent +=
-            "</div>";
+            "</tr>";
     }
 
 
     printContent +=
+                "</tbody>" +
+            "</table>" +
         "</body>" +
         "</html>";
 

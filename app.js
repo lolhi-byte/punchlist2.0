@@ -17,8 +17,12 @@ let currentList = null;
         items: []
     });
     localStorage.setItem("lists", JSON.stringify(lists));
-    document.getElementById("listContainer").innerHTML +=
-        "<p>" + listName + "</p>";
+        document.getElementById("listContainer").innerHTML +=
+            "<div>" +
+            "<button onclick='openList(\"" + listName + "\")'>" + listName + "</button>" +
+            "<button onclick='editList(" + (lists.length - 1) + ")'>Edit list</button>" +
+            "<button onclick='deleteList(" + (lists.length - 1) + ")'>Delete list</button>" +
+            "</div>";
 }
 function openList(listName){
     currentList = lists.find(function(list) {

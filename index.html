@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Cleanling Lists </title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+       <style>
+            button {
+    font-size: 16px;
+    padding: 8px 12px;
+    margin: 4px;
+}
+            body {
+                font-family: Arial, sans-serif;
+            }
+
+            .report-item {
+                padding: 8px;
+                margin-bottom: 12px;
+            }
+
+            .report-label {
+                font-size: 10px;
+                font-weight: bold;
+                margin: 0;
+            }
+
+            .report-issue {
+                font-size: 18px;
+                font-weight: bold;
+                margin: 2px 0 8px 0;
+            }
+
+            .report-comment {
+                margin: 2px 0 8px 0;
+            }
+
+            @media print {
+                button {
+                    display: none;
+                }
+
+                body {
+                    font-size: 12px;
+                }
+
+                img {
+                    width: 170px;
+                    height: 120px;
+                    object-fit: cover;
+                    margin-right: 8px;
+                    margin-bottom: 8px;
+                }
+                .report-item {
+                border: 1px solid black;
+                page-break-inside: avoid;
+                }
+        }
+        .photo-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }   
+        </style>
+    </head>
+
+    <body>
+        <div id="homeScreen">
+            <h1>Cleaning Lists</h1>
+            <button onclick="newList()">+ New List</button>
+            <div id="listContainer"></div>
+        </div>
+        <div id="openListContainer"></div>
+        <script src="app.js"></script>
+    </body>
+</html>
+

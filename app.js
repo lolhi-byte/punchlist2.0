@@ -255,7 +255,6 @@ async function printList() {
     let printContent =
         "<html>" +
         "<head>" +
-        "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
         "<title>" + currentList.name + "</title>" +
 
         "<style>" +
@@ -273,7 +272,6 @@ async function printList() {
                 "margin: 0;" +
                 "padding: 0;" +
                 "width: 190mm;" +
-                "max-width: 190mm;" +
             "}" +
 
             "body {" +
@@ -283,81 +281,81 @@ async function printList() {
 
             ".print-title {" +
                 "border: 2px solid black;" +
-                "height: 55px;" +
+                "width: 190mm;" +
+                "height: 14mm;" +
                 "display: flex;" +
                 "align-items: center;" +
                 "justify-content: center;" +
-                "font-size: 22px;" +
-                "margin-bottom: 5px;" +
-                "width: 190mm;" +
+                "font-size: 16px;" +
+                "margin-bottom: 1mm;" +
             "}" +
 
             "table {" +
-                "border-collapse: separate;" +
-                "border-spacing: 0 4px;" +
+                "border-collapse: collapse;" +
                 "table-layout: fixed;" +
                 "width: 190mm;" +
             "}" +
 
             "tr {" +
-                "height: 145px;" +
+                "height: 38mm;" +
                 "page-break-inside: avoid;" +
                 "break-inside: avoid;" +
             "}" +
 
             "td {" +
-                "height: 145px;" +
+                "height: 38mm;" +
                 "vertical-align: top;" +
                 "padding: 0;" +
             "}" +
 
             ".item-number {" +
-                "width: 6%;" +
+                "width: 10mm;" +
                 "border: 2px solid black;" +
                 "text-align: center;" +
-                "padding: 5px 2px;" +
+                "padding: 1mm;" +
             "}" +
 
             ".item-details {" +
-                "width: 23.5%;" +
+                "width: 45mm;" +
                 "border: 2px solid black;" +
-                "padding: 5px;" +
+                "padding: 1mm;" +
             "}" +
 
             ".print-photo {" +
-                "width: 23.5%;" +
-                "padding-left: 4px;" +
+                "width: 45mm;" +
+                "height: 38mm;" +
                 "overflow: hidden;" +
+                "padding: 0 0 0 1mm;" +
             "}" +
 
             ".print-photo img {" +
                 "display: block;" +
-                "width: 100%;" +
-                "height: 145px;" +
+                "width: 44mm;" +
+                "height: 38mm;" +
                 "object-fit: cover;" +
             "}" +
 
             ".label {" +
-                "font-size: 11px;" +
+                "font-size: 8px;" +
                 "line-height: 1.1;" +
                 "color: #444;" +
             "}" +
 
             ".item-number-value {" +
-                "font-size: 14px;" +
-                "margin-top: 2px;" +
+                "font-size: 11px;" +
+                "margin-top: 1mm;" +
             "}" +
 
             ".issue {" +
-                "font-size: 14px;" +
+                "font-size: 11px;" +
                 "line-height: 1.15;" +
-                "height: 57px;" +
+                "height: 16mm;" +
                 "overflow: hidden;" +
                 "overflow-wrap: anywhere;" +
             "}" +
 
             ".comment {" +
-                "font-size: 13px;" +
+                "font-size: 10px;" +
                 "line-height: 1.15;" +
                 "overflow-wrap: anywhere;" +
             "}" +
@@ -373,11 +371,11 @@ async function printList() {
 
             "<table>" +
                 "<colgroup>" +
-                    "<col style='width: 6%;'>" +
-                    "<col style='width: 23.5%;'>" +
-                    "<col style='width: 23.5%;'>" +
-                    "<col style='width: 23.5%;'>" +
-                    "<col style='width: 23.5%;'>" +
+                    "<col style='width:10mm'>" +
+                    "<col style='width:45mm'>" +
+                    "<col style='width:45mm'>" +
+                    "<col style='width:45mm'>" +
+                    "<col style='width:45mm'>" +
                 "</colgroup>" +
                 "<tbody>";
 
@@ -429,8 +427,6 @@ async function printList() {
         }
 
 
-        /* Always make exactly 3 photo cells */
-
         for (let emptySlot = photoCount; emptySlot < 3; emptySlot++) {
             printContent +=
                 "<td class='print-photo'></td>";
@@ -453,8 +449,6 @@ async function printList() {
     printWindow.document.write(printContent);
     printWindow.document.close();
 }
-
-
 function getPhotoForPrint(photoId) {
     return new Promise(function(resolve) {
 
@@ -484,7 +478,6 @@ function getPhotoForPrint(photoId) {
         };
     });
 }
-
 
 /* =========================
    DELETE / EDIT

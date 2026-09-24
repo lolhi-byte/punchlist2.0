@@ -10,7 +10,7 @@ database.createObjectStore("photos", { autoIncrement: true });
 let lists = [];
 let currentList = null;
    function newList() {
-    let listName = prompt("List name?: ");
+    let listName = prompt("List name: ");
 
     lists.push({
         name: listName,

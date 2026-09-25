@@ -245,209 +245,217 @@ function addPhoto(index) {
    ========================= */
 
 async function printList() {
-    let printWindow = window.open("", "_blank");
+    let printContent =
+        "<html>" +
+        "<head>" +
+        "<title>" + currentList.name + "</title>" +
 
-    if (!printWindow) {
-        alert("Please allow pop-ups to print this list.");
-        return;
-    }
+        "<style>" +
 
-    let printContent =
-        "<html>" +
-        "<head>" +
-        "<title>" + currentList.name + "</title>" +
+            "@page {" +
+                "size: A4 portrait;" +
+                "margin: 10mm;" +
+            "}" +
 
-        "<style>" +
+            "* {" +
+                "box-sizing: border-box;" +
+            "}" +
 
-            "@page {" +
-                "size: A4 portrait;" +
-                "margin: 10mm;" +
-            "}" +
+            "html, body {" +
+                "margin: 0;" +
+                "padding: 0;" +
+                "width: 190mm;" +
+            "}" +
 
-            "* {" +
-                "box-sizing: border-box;" +
-            "}" +
+            "body {" +
+                "font-family: Arial, sans-serif;" +
+                "color: black;" +
+            "}" +
 
-            "html, body {" +
-                "margin: 0;" +
-                "padding: 0;" +
-                "width: 190mm;" +
-            "}" +
+            ".print-title {" +
+                "border: 2px solid black;" +
+                "width: 190mm;" +
+                "height: 14mm;" +
+                "display: flex;" +
+                "align-items: center;" +
+                "justify-content: center;" +
+                "font-size: 16px;" +
+                "margin-bottom: 1mm;" +
+            "}" +
 
-            "body {" +
-                "font-family: Arial, sans-serif;" +
-                "color: black;" +
-            "}" +
+            "table {" +
+                "border-collapse: collapse;" +
+                "table-layout: fixed;" +
+                "width: 190mm;" +
+            "}" +
 
-            ".print-title {" +
-                "border: 2px solid black;" +
-                "width: 190mm;" +
-                "height: 14mm;" +
-                "display: flex;" +
-                "align-items: center;" +
-                "justify-content: center;" +
-                "font-size: 16px;" +
-                "margin-bottom: 1mm;" +
-            "}" +
+            "tr {" +
+                "height: 38mm;" +
+                "page-break-inside: avoid;" +
+                "break-inside: avoid;" +
+            "}" +
 
-            "table {" +
-                "border-collapse: collapse;" +
-                "table-layout: fixed;" +
-                "width: 190mm;" +
-            "}" +
+            "td {" +
+                "height: 38mm;" +
+                "vertical-align: top;" +
+                "padding: 0;" +
+            "}" +
 
-            "tr {" +
-                "height: 38mm;" +
-                "page-break-inside: avoid;" +
-                "break-inside: avoid;" +
-            "}" +
+            ".item-number {" +
+                "width: 10mm;" +
+                "border: 2px solid black;" +
+                "text-align: center;" +
+                "padding: 1mm;" +
+            "}" +
 
-            "td {" +
-                "height: 38mm;" +
-                "vertical-align: top;" +
-                "padding: 0;" +
-            "}" +
+            ".item-details {" +
+                "width: 45mm;" +
+                "border: 2px solid black;" +
+                "padding: 1mm;" +
+            "}" +
 
-            ".item-number {" +
-                "width: 10mm;" +
-                "border: 2px solid black;" +
-                "text-align: center;" +
-                "padding: 1mm;" +
-            "}" +
+            ".print-photo {" +
+                "width: 45mm;" +
+                "height: 38mm;" +
+                "overflow: hidden;" +
+                "padding: 0 0 0 1mm;" +
+            "}" +
 
-            ".item-details {" +
-                "width: 45mm;" +
-                "border: 2px solid black;" +
-                "padding: 1mm;" +
-            "}" +
+            ".print-photo img {" +
+                "display: block;" +
+                "width: 44mm;" +
+                "height: 38mm;" +
+                "object-fit: cover;" +
+            "}" +
 
-            ".print-photo {" +
-                "width: 45mm;" +
-                "height: 38mm;" +
-                "overflow: hidden;" +
-                "padding: 0 0 0 1mm;" +
-            "}" +
+            ".label {" +
+                "font-size: 8px;" +
+                "line-height: 1.1;" +
+                "color: #444;" +
+            "}" +
 
-            ".print-photo img {" +
-                "display: block;" +
-                "width: 44mm;" +
-                "height: 38mm;" +
-                "object-fit: cover;" +
-            "}" +
+            ".item-number-value {" +
+                "font-size: 11px;" +
+                "margin-top: 1mm;" +
+            "}" +
 
-            ".label {" +
-                "font-size: 8px;" +
-                "line-height: 1.1;" +
-                "color: #444;" +
-            "}" +
+            ".issue {" +
+                "font-size: 11px;" +
+                "line-height: 1.15;" +
+                "height: 16mm;" +
+                "overflow: hidden;" +
+                "overflow-wrap: anywhere;" +
+            "}" +
 
-            ".item-number-value {" +
-                "font-size: 11px;" +
-                "margin-top: 1mm;" +
-            "}" +
+            ".comment {" +
+                "font-size: 10px;" +
+                "line-height: 1.15;" +
+                "overflow-wrap: anywhere;" +
+            "}" +
 
-            ".issue {" +
-                "font-size: 11px;" +
-                "line-height: 1.15;" +
-                "height: 16mm;" +
-                "overflow: hidden;" +
-                "overflow-wrap: anywhere;" +
-            "}" +
+        "</style>" +
+        "</head>" +
 
-            ".comment {" +
-                "font-size: 10px;" +
-                "line-height: 1.15;" +
-                "overflow-wrap: anywhere;" +
-            "}" +
+        "<body>" +
 
-        "</style>" +
-        "</head>" +
+            "<div class='print-title'>" +
+                currentList.name +
+            "</div>" +
 
-        "<body>" +
+            "<table>" +
+                "<colgroup>" +
+                    "<col style='width:10mm'>" +
+                    "<col style='width:45mm'>" +
+                    "<col style='width:45mm'>" +
+                    "<col style='width:45mm'>" +
+                    "<col style='width:45mm'>" +
+                "</colgroup>" +
+                "<tbody>";
 
-            "<div class='print-title'>" +
-                currentList.name +
-            "</div>" +
+    for (let index = 0; index < currentList.items.length; index++) {
+        let item = currentList.items[index];
 
-            "<table>" +
-                "<colgroup>" +
-                    "<col style='width:10mm'>" +
-                    "<col style='width:45mm'>" +
-                    "<col style='width:45mm'>" +
-                    "<col style='width:45mm'>" +
-                    "<col style='width:45mm'>" +
-                "</colgroup>" +
-                "<tbody>";
+        printContent +=
+            "<tr>" +
 
+                "<td class='item-number'>" +
+                    "<div class='label'>ITEM</div>" +
+                    "<div class='item-number-value'>" +
+                        (index + 1) +
+                    "</div>" +
+                "</td>" +
 
-    for (let index = 0; index < currentList.items.length; index++) {
+                "<td class='item-details'>" +
+                    "<div class='label'>ISSUE</div>" +
+                    "<div class='issue'>" +
+                        (item.issue || "") +
+                    "</div>" +
 
-        let item = currentList.items[index];
+                    "<div class='label'>COMMENT</div>" +
+                    "<div class='comment'>" +
+                        (item.comment || "") +
+                    "</div>" +
+                "</td>";
 
-        printContent +=
-            "<tr>" +
+        let photoCount = 0;
 
-                "<td class='item-number'>" +
-                    "<div class='label'>ITEM</div>" +
-                    "<div class='item-number-value'>" +
-                        (index + 1) +
-                    "</div>" +
-                "</td>" +
+        if (item.photos) {
+            for (let photoId of item.photos) {
+                let photoUrl = await getPhotoForPrint(photoId);
 
-                "<td class='item-details'>" +
-                    "<div class='label'>ISSUE</div>" +
-                    "<div class='issue'>" +
-                        (item.issue || "") +
-                    "</div>" +
+                if (photoUrl) {
+                    printContent +=
+                        "<td class='print-photo'>" +
+                            "<img src='" + photoUrl + "'>" +
+                        "</td>";
 
-                    "<div class='label'>COMMENT</div>" +
-                    "<div class='comment'>" +
-                        (item.comment || "") +
-                    "</div>" +
-                "</td>";
+                    photoCount++;
+                }
+            }
+        }
 
+        for (let emptySlot = photoCount; emptySlot < 3; emptySlot++) {
+            printContent +=
+                "<td class='print-photo'></td>";
+        }
 
-        let photoCount = 0;
+        printContent +=
+            "</tr>";
+    }
 
-        if (item.photos) {
+    printContent +=
+                "</tbody>" +
+            "</table>" +
+        "</body>" +
+        "</html>";
 
-            for (let photoId of item.photos) {
+    let oldFrame = document.getElementById("printFrame");
 
-                let photoUrl = await getPhotoForPrint(photoId);
+    if (oldFrame) {
+        oldFrame.remove();
+    }
 
-                if (photoUrl) {
-                    printContent +=
-                        "<td class='print-photo'>" +
-                            "<img src='" + photoUrl + "'>" +
-                        "</td>";
+    let printFrame = document.createElement("iframe");
+    printFrame.id = "printFrame";
+    printFrame.style.position = "fixed";
+    printFrame.style.right = "0";
+    printFrame.style.bottom = "0";
+    printFrame.style.width = "0";
+    printFrame.style.height = "0";
+    printFrame.style.border = "0";
 
-                    photoCount++;
-                }
-            }
-        }
+    document.body.appendChild(printFrame);
 
+    let frameDoc = printFrame.contentWindow.document;
 
-        for (let emptySlot = photoCount; emptySlot < 3; emptySlot++) {
-            printContent +=
-                "<td class='print-photo'></td>";
-        }
+    frameDoc.open();
+    frameDoc.write(printContent);
+    frameDoc.close();
 
-
-        printContent +=
-            "</tr>";
-    }
-
-
-    printContent +=
-                "</tbody>" +
-            "</table>" +
-        "</body>" +
-        "</html>";
-
-
-    printWindow.document.open();
-    printWindow.document.write(printContent);
-    printWindow.document.close();
+    setTimeout(function() {
+        printFrame.contentWindow.focus();
+        printFrame.contentWindow.print();
+    }, 500);
 }
 function getPhotoForPrint(photoId) {
     return new Promise(function(resolve) {
